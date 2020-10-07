@@ -6,7 +6,7 @@
 
         <title>Nicholas C</title>
 
-        <link rel="stylesheet" href="build/tailwind.css">
+        <link rel="stylesheet" href="/css/app.css">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
     </head>
