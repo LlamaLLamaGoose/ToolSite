@@ -16,3 +16,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('home');
 });
+
+Route::group(['prefix' => 'tools'], function () {
+    Route::get('/', function () {
+        return view('tools/home');
+    });
+
+    Route::get('/iplookup', function () {
+        return view('tools/iplookup');
+    });
+
+    Route::post('/iplookup/check', 'ToolsController@ipcheck');
+});
