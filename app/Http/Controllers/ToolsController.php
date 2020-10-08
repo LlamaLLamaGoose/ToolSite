@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use GeoIp2\Database\Reader;
 use Illuminate\Http\Request;
 
 class ToolsController extends Controller
 {
     public function ipcheck(Request $request) {
-        //dd($request->IPAddressTXT);
 
         $lists = [];
         $sorted_list = [];
         $input = explode(PHP_EOL, $request->IPAddressTXT);
 
+        require_once 'vendor/autoload.php';
+
         dd($input);
-/*
-        $dbugmode = 0;
-        require_once '/home/nicholasc/public_html/vendor/autoload.php';
-        use GeoIp2\Database\Reader;
 
         $readercont = new Reader('/usr/local/share/GeoIP/GeoLite2-Country.mmdb');
         $readercity = new Reader('/usr/local/share/GeoIP/GeoLite2-City.mmdb');
         $readerasn = new Reader('/usr/local/share/GeoIP/GeoLite2-ASN.mmdb');
+
+/*
+        $dbugmode = 0;
 
         //check if form was submitted
         if(isset($_POST['SubmitButton'])){
