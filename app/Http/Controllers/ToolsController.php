@@ -7,7 +7,13 @@ use Illuminate\Http\Request;
 class ToolsController extends Controller
 {
     public function ipcheck(Request $request) {
-        dd($request);
+        //dd($request->IPAddressTXT);
+
+        $lists = [];
+        $sorted_list = [];
+        $input = explode(PHP_EOL, $request->IPAddressTXT);
+
+        dd($input);
 /*
         $dbugmode = 0;
         require_once '/home/nicholasc/public_html/vendor/autoload.php';
