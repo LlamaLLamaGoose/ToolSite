@@ -5,10 +5,10 @@
 <div class="flex-grow">
     <div class="flex">
         <div class="ml-4 w-full mr-8">
-            <form method="POST" action="/tools/iplookup/check">
+            <form method="POST" action="/tools/iplookup">
                 @csrf
                 <label class="text-xl font-semibold text-center text-white mt-4">IP List: </label><br />
-                <textarea class="rounded bg-gray-700 placeholder-gray-400 w-full pl-2 pt-2 text-gray-200" name="IPAddressTXT" rows="8" placeholder="@include('components\tools\_example_iplookup')" ></textarea><br />
+                <textarea class="rounded bg-gray-700 placeholder-gray-400 w-full pl-2 pt-2 text-gray-200" name="IPAddressTXT" rows="8" placeholder="@include('components\tools\_example_iplookup')" >{{ old('IPAddressTXT') }}</textarea><br />
 
                 <div>
                     <button type="submit" class="rounded m-4 h-8 w-16 hover:bg-gray-100 bg-gray-300">Submit</button>
@@ -27,7 +27,7 @@
                         <th class="px-8 py-4 rounded-tr-lg border-b-2 border-gray-200">ISP</th>
                     </tr>
                 </thead>
-                <tbody class="">
+                <tbody>
                     @if (empty($results ?? ''))
 
                     @else
@@ -66,6 +66,3 @@
     </div>
 </div>
 @endcomponent
-
-
-

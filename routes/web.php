@@ -26,5 +26,13 @@ Route::group(['prefix' => 'tools'], function () {
         return view('tools/iplookup');
     });
 
-    Route::post('/iplookup/check', 'ToolsController@ipcheck');
+    Route::get('/bulkip', function () {
+        return view('tools/bulkip');
+    });
+
+    Route::post('/iplookup', 'ToolsController@ipcheck');
+
+    Route::post('/bulkip', 'ToolsController@bulkip');
+
+
 });

@@ -81,6 +81,97 @@ class ToolsController extends Controller
                 }
             }
         }
-    return view('tools/iplookup')->with(['results' => $result]);
+    return view('tools/iplookup')->with(['results' => $result ?? []]);
     }
+
+    public function bulkip(Request $request)
+    {
+        if (!isset($request->IPAddressTXT)){
+            return view('tools/bulkip');
+        }
+
+        $dbugmode = 0;
+
+        $lists = [];
+        $sorted_list = [];
+        $input = explode(PHP_EOL, $request->IPAddressTXT);
+
+        $au = $request->australiaCB;
+        $nz = $request->NZCB;
+
+        require_once '../vendor/autoload.php';
+
+        $readercont = new Reader('../GeoIP/GeoLite2-Country.mmdb');
+        $readercity = new Reader('../GeoIP/GeoLite2-City.mmdb');
+        $readerasn = new Reader('../GeoIP/GeoLite2-ASN.mmdb');
+
+        if ($dbugmode == 1) {
+            var_dump($input);
+        }
+
+        foreach ($input as $line) {
+            // Split by space, trim extra spaces
+            $rows = array_map('trim', explode(' ', $line));
+
+            // Remove blank items and append to array
+            $sorted_list[] = array_values(array_filter($rows));
+        }
+        $i = 0;
+        //output array
+        foreach ($sorted_list as $row) {
+
+            if (count($row) == 2) {
+
+                [ $hits, $ip ] = $row;
+
+                try {
+                    $country = $readercont->country($ip);
+                    $city = $readercity->city($ip);
+                    $isp = $readerasn->asn($ip);
+
+                    $name = $country->country->name;
+
+                    if (in_array($name, [ $au, $nz ])) {
+                        continue;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                $result[$i]['hits'] = $hits;
+
+                $result[$i]['ip'] = $ip;
+
+                try {
+                    $result[$i]['country'] = ($country->country->name);
+                } catch (\Exception $e) {
+                    echo 'Caught!';
+                    continue;
+                }
+                try {
+                    $result[$i]['city'] = ($city->city->name);
+                } catch (\Exception $e) {
+                    echo 'Caught!';
+                    continue;
+                }
+                try {
+                    $result[$i]['continent'] = ($country->continent->name);
+                } catch (\Exception $e) {
+                    echo 'Caught!';
+                    continue;
+                }
+                try {
+                    $result[$i]['isp'] =  ($isp->autonomousSystemOrganization);
+                } catch (\Exception $e) {
+                    echo 'Caught!';
+                    continue;
+                }
+                $i++;
+            }
+
+        }
+    //dump($result);
+    return view('tools/bulkip')->with(['results' => $result ?? []]);
+    }
+
 }
