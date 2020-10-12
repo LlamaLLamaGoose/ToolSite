@@ -28,7 +28,29 @@
                     </tr>
                 </thead>
                 <tbody class="">
+                    @if (empty($results ?? ''))
 
+                    @else
+                        @foreach ($results  as $result)
+                        <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
+                            <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
+                                {{ $result['ip'] }}
+                            </td>
+                            <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
+                                {{ $result['country'] }}
+                            </td>
+                            <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
+                                {{ $result['city'] }}
+                            </td>
+                            <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
+                                {{ $result['continent'] }}
+                            </td>
+                            <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
+                                {{ $result['isp'] }}
+                            </td>
+                        </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
             <br />
