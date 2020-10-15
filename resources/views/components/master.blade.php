@@ -13,12 +13,12 @@
 
     <body class="bg-gray-900 flex flex-col min-h-screen">
         <header>
-            @include('components\_header')
-            @include('components\_menu')
+            @include('components/_header')
+            @include('components/_menu')
         </header>
             {{ $slot }}
         <footer>
-			@include('components\_footer')
+			@include('components/_footer')
 		</footer>
     </body>
 </html>

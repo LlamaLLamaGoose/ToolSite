@@ -8,7 +8,7 @@
             <form method="POST" action="/tools/bulkscreen/check">
                 @csrf
                 <label class="text-xl font-semibold text-center text-white mt-4">IMAP Sync Commnds:</label><br />
-                <textarea class="rounded bg-gray-700 placeholder-gray-400 w-full pl-2 pt-2 text-gray-200 text-xs" name="syncCommandsTXT" rows="16" placeholder="@include('components\tools\_example_bulkscreen')"></textarea><br />
+                <textarea class="rounded bg-gray-700 placeholder-gray-400 w-full pl-2 pt-2 text-gray-200 text-xs" name="syncCommandsTXT" rows="16" placeholder="@include('components/tools/_example_bulkscreen')"></textarea><br />
                 <button type="submit" class="rounded m-4 h-8 w-16 hover:bg-gray-100 bg-gray-300">Submit</button><br />
 
                 <label class="text-xl font-semibold text-center text-white mt-4">Bulk Commands: </label><br />
