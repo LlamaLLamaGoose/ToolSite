@@ -30,9 +30,20 @@ Route::group(['prefix' => 'tools'], function () {
         return view('tools/bulkip');
     });
 
-    Route::post('/iplookup', 'ToolsController@ipcheck');
+    Route::get('/bulkscreen', function () {
+        return view('tools/bulkscreen');
+    });
 
-    Route::post('/bulkip', 'ToolsController@bulkip');
+    Route::get('/hostfile', function () {
+        return view('tools/hostfile');
+    });
 
+    Route::post('/iplookup/check', 'ToolsController@ipcheck');
+
+    Route::post('/bulkip/check', 'ToolsController@bulkip');
+
+    Route::post('/bulkscreen/check', 'ToolsController@bulkscreen');
+
+    Route::post('/hostfile/check', 'ToolsController@hostfile');
 
 });

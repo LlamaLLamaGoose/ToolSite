@@ -5,7 +5,7 @@
 <div class="flex-grow">
     <div class="flex">
         <div class="ml-4 w-full mr-8">
-            <form method="POST" action="/tools/bulkip">
+            <form method="POST" action="/tools/bulkip/check">
                 @csrf
                 <label class="text-xl font-semibold text-center text-white mt-4">IP List: </label><br />
                 <textarea class="rounded bg-gray-700 placeholder-gray-400 w-full pl-2 pt-2 text-gray-200" name="IPAddressTXT" rows="8" placeholder="@include('components\tools\_example_bulkip')" >{{ old('IPAddressTXT') }}</textarea><br />
@@ -19,8 +19,8 @@
             </form>
             <br />
             <br />
-            <table class="table-auto">
-                <caption class="text-2xl text-center text-gray-200 mt-4 mb-4 font-bold"> Bulk IP Lookup </caption>
+            <table class="table-auto w-full">
+                <caption class="text-2xl text-center text-gray-200 mb-4 font-bold"> Bulk IP Lookup </caption>
                 <thead class="mt-4">
                     <tr class="text-md font-bold text-center text-gray-200 mt-8 bg-gray-600">
                         <th class="px-4 py-4 rounded-tl-lg border-b-2 border-gray-200">Check</th>

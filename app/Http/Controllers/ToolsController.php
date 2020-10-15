@@ -9,7 +9,7 @@ class ToolsController extends Controller
 {
     public function ipcheck(Request $request)
     {
-        if (!isset($request->IPAddressTXT)){
+        if (!isset($request->IPAddressTXT)) {
             return view('tools/iplookup');
         }
 
@@ -86,7 +86,7 @@ class ToolsController extends Controller
 
     public function bulkip(Request $request)
     {
-        if (!isset($request->IPAddressTXT)){
+        if (!isset($request->IPAddressTXT)) {
             return view('tools/bulkip');
         }
 
@@ -174,4 +174,48 @@ class ToolsController extends Controller
     return view('tools/bulkip')->with(['results' => $result ?? []]);
     }
 
+    public function bulkscreen(Request $request)
+    {
+        if (!isset($request->syncCommandsTXT)) {
+            return view('tools/bulkscreen');
+        }
+
+        $input = explode(PHP_EOL, $request->syncCommandsTXT);
+
+        for ($i = 0; $i < count ($input); $i++) {
+            
+            preg_match('/--user1.\w{1,}.\w{1,}/', $input[$i], $screenNames);
+
+            $screenNames[0] = str_replace("--user1 ", '', $screenNames[0]);
+            $screenNames[0] = str_replace('@', '_', $screenNames[0]);
+            $result['screenR'][$i] = "screen -r $screenNames[0]" . "\n";
+
+            $syncCommands[$i] = rtrim($input[$i]);
+            $syncCommands[$i] = str_replace("'", '"', $syncCommands[$i]);
+            $result['screenS'][$i] = "screen -dmS $screenNames[0] bash -c '$syncCommands[$i]; exec bash'"  . "\n";
+        }
+        return view('tools/bulkscreen')->with(['results' => $result ?? []]);
+    }
+
+    public function hostfile(Request $request)
+    {
+        if (!isset($request->IPAddressTXT)) {
+            return view('tools/hostfile');
+        }
+
+        if (!isset($request->DomainTXT)) {
+            return view('tools/hostfile');
+        }
+
+        $inputIP = $request->IPAddressTXT;
+        $inputDN = preg_split('/\s+/', $request->DomainTXT);
+
+        for ($i = 0; $i < count ($inputDN); $i++){
+            $host[$i] = "$inputIP $inputDN[$i] www.$inputDN[$i]" . "\n";
+        }
+    
+    $result = implode ('', $host);       
+
+    return view('tools/hostfile')->with(['results' => $result ?? []]);
+    }
 }
