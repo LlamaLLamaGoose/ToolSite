@@ -38,6 +38,10 @@ Route::group(['prefix' => 'tools'], function () {
         return view('tools/hostfile');
     });
 
+    Route::get('/o365mxrecords', function () {
+        return view('tools/o365mxrecords');
+    });    
+
     Route::post('/iplookup/check', 'ToolsController@ipcheck');
 
     Route::post('/bulkip/check', 'ToolsController@bulkip');
@@ -45,5 +49,7 @@ Route::group(['prefix' => 'tools'], function () {
     Route::post('/bulkscreen/check', 'ToolsController@bulkscreen');
 
     Route::post('/hostfile/check', 'ToolsController@hostfile');
+
+    Route::post('/o365mxrecords/check', 'ToolsController@o365mxrecords');
 
 });

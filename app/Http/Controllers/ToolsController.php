@@ -218,4 +218,37 @@ class ToolsController extends Controller
 
     return view('tools/hostfile')->with(['results' => $result ?? []]);
     }
+
+    public function o365mxrecords(Request $request)
+    {
+        if (!isset($request->cPanelUsername)) {
+            return view('tools/o365mxrecords');
+        }
+
+        if (!isset($request->DomainName)) {
+            return view('tools/o365mxrecords');
+        }
+
+        $inputCP = $request->cPanelUsername;
+        $inputDN = $request->DomainName;
+
+        $microsoftdumb = str_replace(".", '-', $inputDN);
+
+        //output array
+        $host[0] = "uapi --user=$inputCP Email add_mx domain=$inputDN exchanger=" . $microsoftdumb . ".mail.protection.outlook.com priority=0 | grep 'errors: 1'" . "\n";
+        $host[1] = "uapi --user=$inputCP Email set_always_accept domain=" . $inputDN . "mxcheck=remote | grep 'errors: 1'" . "\n";
+        $host[2] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=autodiscover type=CNAME cname=autodiscover.outlook.com |  grep 'already'" . "\n";
+        $host[3] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=sip type=CNAME cname=sipdir.online.lync.com |  grep 'already'" . "\n";
+        $host[4] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=lyncdiscover type=CNAME cname=webdir.online.lync.com |  grep 'already'" . "\n";
+        $host[5] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=enterpriseregistration type=CNAME cname=enterpriseregistration.windows.net |  grep 'already'" . "\n";
+        $host[6] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=enterpriseenrollment type=CNAME cname=enterpriseenrollment.manage.microsoft.com |  grep 'already'" . "\n";
+        $host[7] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=msoid type=CNAME cname=clientconfig.microsoftonline-p.net |  grep 'already'" . "\n";
+        $host[8] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=_sip._tls type=SRV target=sipdir.online.lync.com priority=100 weight=1 port=443 |  grep 'already'" . "\n";
+        $host[9] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=_sipfederationtls._tcp type=SRV target=sipfed.online.lync.com priority=100 weight=1 port=5061 |  grep 'already'" . "\n";
+        $host[10] = "cpapi2 --user=$inputCP ZoneEdit add_zone_record domain=$inputDN name=$inputDN" . " type=TXT txtdata='v=spf1 include:spf.protection.outlook.com -all' |  echo 'Update Me Manually'" . "\n";
+        //paste
+        $result = implode ('', $host);
+
+        return view('tools/o365mxrecords')->with(['results' => $result ?? []]);
+    }
 }
