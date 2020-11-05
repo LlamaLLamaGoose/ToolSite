@@ -2,8 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use dacoto\DomainValidator\Validator\Domain;
 use GeoIp2\Database\Reader;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Iodev\Whois\Factory;
+use Iodev\Whois\Modules\Tld\TldServer;
+use Iodev\Whois\Exceptions\ConnectionException;
+use Iodev\Whois\Exceptions\ServerMismatchException;
+use Iodev\Whois\Exceptions\WhoisException;
 
 class ToolsController extends Controller
 {
@@ -19,11 +26,11 @@ class ToolsController extends Controller
         $sorted_list = [];
         $input = explode(PHP_EOL, $request->IPAddressTXT);
 
-        require_once '../vendor/autoload.php';
+        require_once '../ToolSite/vendor/autoload.php';
 
-        $readercont = new Reader('../GeoIP/GeoLite2-Country.mmdb');
-        $readercity = new Reader('../GeoIP/GeoLite2-City.mmdb');
-        $readerasn = new Reader('../GeoIP/GeoLite2-ASN.mmdb');
+        $readercont = new Reader('../ToolSite/GeoIP/GeoLite2-Country.mmdb');
+        $readercity = new Reader('../ToolSite/GeoIP/GeoLite2-City.mmdb');
+        $readerasn = new Reader('../ToolSite/GeoIP/GeoLite2-ASN.mmdb');
 
         if ($dbugmode == 1) {
             var_dump($input);
@@ -99,11 +106,11 @@ class ToolsController extends Controller
         $au = $request->australiaCB;
         $nz = $request->NZCB;
 
-        require_once '../vendor/autoload.php';
+        require_once '../ToolSite/vendor/autoload.php';
 
-        $readercont = new Reader('../GeoIP/GeoLite2-Country.mmdb');
-        $readercity = new Reader('../GeoIP/GeoLite2-City.mmdb');
-        $readerasn = new Reader('../GeoIP/GeoLite2-ASN.mmdb');
+        $readercont = new Reader('../ToolSite/GeoIP/GeoLite2-Country.mmdb');
+        $readercity = new Reader('../ToolSite/GeoIP/GeoLite2-City.mmdb');
+        $readerasn = new Reader('../ToolSite/GeoIP/GeoLite2-ASN.mmdb');
 
         if ($dbugmode == 1) {
             var_dump($input);
@@ -183,7 +190,7 @@ class ToolsController extends Controller
         $input = explode(PHP_EOL, $request->syncCommandsTXT);
 
         for ($i = 0; $i < count ($input); $i++) {
-            
+
             preg_match('/--user1.\w{1,}.\w{1,}/', $input[$i], $screenNames);
 
             $screenNames[0] = str_replace("--user1 ", '', $screenNames[0]);
@@ -213,8 +220,8 @@ class ToolsController extends Controller
         for ($i = 0; $i < count ($inputDN); $i++){
             $host[$i] = "$inputIP $inputDN[$i] www.$inputDN[$i]" . "\n";
         }
-    
-    $result = implode ('', $host);       
+
+    $result = implode ('', $host);
 
     return view('tools/hostfile')->with(['results' => $result ?? []]);
     }
@@ -250,5 +257,65 @@ class ToolsController extends Controller
         $result = implode ('', $host);
 
         return view('tools/o365mxrecords')->with(['results' => $result ?? []]);
+    }
+
+    public function dnstool(Request $request)
+    {
+        $validatedData = $request->validate([
+            'DomainTXT' => ['required', 'string', new Domain],
+        ]);
+        
+        $domainFM = $request->DomainTXT;
+        //$dig = Http::get('http://lookmeupdaddy.benjamyn.love/lookup/' . $domainFM)
+        //    ->body();
+        //$values = json_decode($dig,true);
+        //We limited it boi's we done here
+        
+        // create whois
+        $whois = Factory::get()->createWhois();
+        
+        // Define custom whois host
+        $loveServer = new TldServer(".love", "whois.nic.love", false, Factory::get()->createTldParser());
+        
+        // Add custom server to existing whois instance
+        $whois->getTldModule()->addServers([$loveServer]);
+        
+        // dns lookup
+        $dnsLookup = new \FrankVanHest\DnsLookup\DnsLookup($domainFM);
+        
+        try {
+            $info = $whois->loadDomainInfo($domainFM);
+            if (!$info) {
+                $dnsValue['Hookstatus'] = 'Null if domain available';
+                exit;
+            }
+            
+            $dnsValue = [
+                'domain' => $info->getData()['domainName'],
+                'registrar' => $info->getData()['registrar'],
+                'status' => $info->getData()['states'],
+                'registrantName' => $info->getExtra()['groups'][0]['Registrant'] ?? '',
+                'eligibilityType' => $info->getExtra()['groups'][0]['Eligibility Type'] ?? '',
+                'eligibilityID' => $info->getExtra()['groups'][0]['Registrant ID'] ?? '',
+                'nameservers' => $info->getExtra()['groups'][0]['Name Server'] ?? '',
+                'UpdateDate' => $info->getExtra()['groups'][0]['Updated Date'] ?? '',
+                'createDate' => $info->getExtra()['groups'][0]['Creation Date'] ?? '',
+                'expireDate' => $info->getData()['expirationDate'] ?? '',
+                'arecord' => $dnsLookup->getRecordsByType('A') ?? '',
+                'aaaarecord' => $dnsLookup->getRecordsByType('AAAA') ?? '',
+                'mxrecord' => $dnsLookup->getRecordsByType('MX') ?? '',
+                'txtrecord' => $dnsLookup->getRecordsByType('TXT') ?? '',
+                'soarecord' => $dnsLookup->getRecordsByType('SOA') ?? '',
+                'Hookstatus' => ''
+            ];
+        } catch (ConnectionException $e) {
+            $dnsValue['Hookstatus'] = 'Disconnect or connection timeout';
+        } catch (ServerMismatchException $e) {
+            $dnsValue['Hookstatus'] = 'TLD server (.com for google.com) not found in current server hosts';
+        } catch (WhoisException $e) {
+            $dnsValue['Hookstatus'] =  "Whois server responded with error '{$e->getMessage()}'";
+        }
+        
+        return view('tools/dnstool')->with(['result' => $dnsValue ?? []]);
     }
 }

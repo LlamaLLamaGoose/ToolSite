@@ -12,6 +12,7 @@
         <a class= "inline-block mt-2 text-gray-500 hover:text-white hover:bg-gray-700 w-full px-4 h-8 align-middle" href="/tools/iplookup"> IP Lookup </a> <br/>
         <a class= "inline-block mt-2 text-gray-500 hover:text-white hover:bg-gray-700 w-full px-4 h-8 align-middle" href="/tools/bulkscreen"> Bulk Screen </a> <br/>
         <a class= "inline-block mt-2 text-gray-500 hover:text-white hover:bg-gray-700 w-full px-4 h-8 align-middle" href="/tools/o365mxrecords"> Office 365 Records </a> <br/>
+        <a class= "inline-block mt-2 text-gray-500 hover:text-white hover:bg-gray-700 w-full px-4 h-8 align-middle" href="/tools/dnstool"> DNS Tool (WIP) </a> <br/>
     </div>
 </div>
 @endcomponent

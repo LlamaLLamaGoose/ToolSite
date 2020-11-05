@@ -40,7 +40,11 @@ Route::group(['prefix' => 'tools'], function () {
 
     Route::get('/o365mxrecords', function () {
         return view('tools/o365mxrecords');
-    });    
+    });
+
+    Route::get('/dnstool', function () {
+        return view('tools/dnstool');
+    });
 
     Route::post('/iplookup/check', 'ToolsController@ipcheck');
 
@@ -51,5 +55,7 @@ Route::group(['prefix' => 'tools'], function () {
     Route::post('/hostfile/check', 'ToolsController@hostfile');
 
     Route::post('/o365mxrecords/check', 'ToolsController@o365mxrecords');
+
+    Route::post('/dnstool/check', 'ToolsController@dnstool');
 
 });
