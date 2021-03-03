@@ -21,11 +21,11 @@
                 <button type="submit" class="rounded m-4 h-8 mt-0 w-16 hover:bg-gray-100 bg-gray-300">Submit</button><br />
             </form>
             <div class="text-white">
-                @if (! empty($result['Hookstatus']))
-                    <h1> Something broke: {{ $result['Hookstatus'] }}</h1>
+                @if (! empty($result['hookStatus']))
+                    <h1> Something broke: {{ $result['hookStatus'] }}</h1>
                 @else
                     @if (empty($result))
-                    
+
                     @else
                     <table class="table-auto w-full">
                     <caption class="text-2xl text-center text-gray-200 mb-4 font-bold"> DOMAIN INFO </caption>
@@ -44,7 +44,7 @@
                                {{ $result['domain'] ?? 'no domain' }}
                             </td>
                         </tr>
-                        
+
                         <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                             <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                 Registrar:
@@ -53,7 +53,7 @@
                                {{ $result['registrar'] ?? 'no domain' }}
                             </td>
                         </tr>
-    
+
                         @foreach ($result['status'] as $dnsValue['status'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
@@ -64,7 +64,7 @@
                                 </td>
                             </tr>
                         @endforeach
-    
+
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     Registrant Name:
@@ -89,7 +89,7 @@
                                    {{ $result['eligibilityID'] ?? 'No eligibility ID' }}
                                 </td>
                             </tr>
-    
+
                         @foreach ($result['nameservers'] as $dnsValue['nameservers'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
@@ -100,7 +100,7 @@
                                 </td>
                             </tr>
                         @endforeach
-                        
+
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     Create Date:
@@ -117,7 +117,7 @@
                                    {{ $result['UpdateDate'] ?? 'Update date missing lol' }}
                                 </td>
                             </tr>
-                        
+
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     Expire Date:
@@ -126,7 +126,7 @@
                                    {{ $result['expireDate'] ?? 'Expire date missing lol' }}
                                 </td>
                             </tr>
-                        
+
                     </tbody>
                     <thead class="mt-4">
                         <tr class="text-md font-bold text-center text-gray-200 mt-8 bg-gray-600">
@@ -135,57 +135,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($result['arecord'] as $dnsValue['arecord'])
+                        @foreach ($result['aRecord'] as $dnsValue['aRecord'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     A Record:
                                 </td>
                                 <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
-                                   {{ $dnsValue['arecord']->getValue() ?? '' }}
+                                   {{ $dnsValue['aRecord']->getValue() ?? '' }}
                                 </td>
                             </tr>
                         @endforeach
-                        
-                        @foreach ($result['aaaarecord'] as $dnsValue['aaaarecord'])
+
+                        @foreach ($result['aaaaRecord'] as $dnsValue['aaaaRecord'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     AAAA Record:
                                 </td>
                                 <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
-                                   {{ $dnsValue['aaaarecord']->getValue() ?? '' }}
+                                   {{ $dnsValue['aaaaRecord']->getValue() ?? '' }}
                                 </td>
                             </tr>
                         @endforeach
-    
-                        @foreach ($result['mxrecord'] as $dnsValue['mxrecord'])
+
+                        @foreach ($result['mxRecord'] as $dnsValue['mxRecord'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     MX Record:
                                 </td>
                                 <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
-                                   {{ $dnsValue['mxrecord']->getValue() ?? '' }} : {{ $dnsValue['mxrecord']->getPrio() ?? '' }}
+                                   {{ $dnsValue['mxRecord']->getValue() ?? '' }} : {{ $dnsValue['mxRecord']->getPrio() ?? '' }}
                                 </td>
                             </tr>
                         @endforeach
-    
-                        @foreach ($result['txtrecord'] as $dnsValue['txtrecord'])
+
+                        @foreach ($result['txtRecord'] as $dnsValue['txtRecord'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     TXT Record:
                                 </td>
                                 <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
-                                   {{ $dnsValue['txtrecord']->getValue() ?? '' }}
+                                   {{ $dnsValue['txtRecord']->getValue() ?? '' }}
                                 </td>
                             </tr>
                         @endforeach
-    
-                        @foreach ($result['soarecord'] as $dnsValue['soarecord'])
+
+                        @foreach ($result['soaRecord'] as $dnsValue['soaRecord'])
                             <tr class='bg-gray-700 odd:bg-gray-800 hover:bg-gray-600'>
                                <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
                                     SOA Record:
                                 </td>
                                 <td class='border-b-2 border-gray-200 text-gray-300 px-2 py-1'>
-                                   {{ $dnsValue['soarecord']->getValue() ?? '' }}
+                                   {{ $dnsValue['soaRecord']->getValue() ?? '' }}
                                 </td>
                             </tr>
                         @endforeach

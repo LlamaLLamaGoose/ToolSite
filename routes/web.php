@@ -56,6 +56,5 @@ Route::group(['prefix' => 'tools'], function () {
 
     Route::post('/o365mxrecords/check', 'ToolsController@o365mxrecords');
 
-    Route::post('/dnstool/check', 'ToolsController@dnstool');
-
+    Route::post('/dnstool/check', 'ToolsController@dnsTool');
 });

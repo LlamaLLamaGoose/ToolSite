@@ -6,11 +6,11 @@ use dacoto\DomainValidator\Validator\Domain;
 use GeoIp2\Database\Reader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Iodev\Whois\Factory;
-use Iodev\Whois\Modules\Tld\TldServer;
 use Iodev\Whois\Exceptions\ConnectionException;
 use Iodev\Whois\Exceptions\ServerMismatchException;
 use Iodev\Whois\Exceptions\WhoisException;
+use Iodev\Whois\Factory;
+use Iodev\Whois\Modules\Tld\TldServer;
 
 class ToolsController extends Controller
 {
@@ -259,37 +259,37 @@ class ToolsController extends Controller
         return view('tools/o365mxrecords')->with(['results' => $result ?? []]);
     }
 
-    public function dnstool(Request $request)
+    public function dnsTool(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'DomainTXT' => ['required', 'string', new Domain],
         ]);
-        
+
         $domainFM = $request->DomainTXT;
-        //$dig = Http::get('http://lookmeupdaddy.benjamyn.love/lookup/' . $domainFM)
-        //    ->body();
-        //$values = json_decode($dig,true);
-        //We limited it boi's we done here
-        
-        // create whois
+
+        // create whois instance
         $whois = Factory::get()->createWhois();
-        
+
         // Define custom whois host
-        $loveServer = new TldServer(".love", "whois.nic.love", false, Factory::get()->createTldParser());
-        
+        $customServers = [
+            'love' => new TldServer(".love", "whois.nic.love", false, Factory::get()->createTldParser())
+        ];
+
         // Add custom server to existing whois instance
-        $whois->getTldModule()->addServers([$loveServer]);
-        
+        foreach ($customServers as $server) {
+            $whois->getTldModule()->addServers([$server]);
+        }
+
         // dns lookup
         $dnsLookup = new \FrankVanHest\DnsLookup\DnsLookup($domainFM);
-        
+
         try {
             $info = $whois->loadDomainInfo($domainFM);
             if (!$info) {
-                $dnsValue['Hookstatus'] = 'Null if domain available';
+                $dnsValue['hookStatus'] = 'Null if domain available';
                 exit;
             }
-            
+
             $dnsValue = [
                 'domain' => $info->getData()['domainName'],
                 'registrar' => $info->getData()['registrar'],
@@ -301,21 +301,21 @@ class ToolsController extends Controller
                 'UpdateDate' => $info->getExtra()['groups'][0]['Updated Date'] ?? '',
                 'createDate' => $info->getExtra()['groups'][0]['Creation Date'] ?? '',
                 'expireDate' => $info->getData()['expirationDate'] ?? '',
-                'arecord' => $dnsLookup->getRecordsByType('A') ?? '',
-                'aaaarecord' => $dnsLookup->getRecordsByType('AAAA') ?? '',
-                'mxrecord' => $dnsLookup->getRecordsByType('MX') ?? '',
-                'txtrecord' => $dnsLookup->getRecordsByType('TXT') ?? '',
-                'soarecord' => $dnsLookup->getRecordsByType('SOA') ?? '',
-                'Hookstatus' => ''
+                'aRecord' => $dnsLookup->getRecordsByType('A') ?? '',
+                'aaaaRecord' => $dnsLookup->getRecordsByType('AAAA') ?? '',
+                'mxRecord' => $dnsLookup->getRecordsByType('MX') ?? '',
+                'txtRecord' => $dnsLookup->getRecordsByType('TXT') ?? '',
+                'soaRecord' => $dnsLookup->getRecordsByType('SOA') ?? '',
+                'hookStatus' => ''
             ];
         } catch (ConnectionException $e) {
-            $dnsValue['Hookstatus'] = 'Disconnect or connection timeout';
+            $dnsValue['hookStatus'] = 'Disconnect or connection timeout';
         } catch (ServerMismatchException $e) {
-            $dnsValue['Hookstatus'] = 'TLD server (.com for google.com) not found in current server hosts';
+            $dnsValue['hookStatus'] = 'TLD server (.com for google.com) not found in current server hosts';
         } catch (WhoisException $e) {
-            $dnsValue['Hookstatus'] =  "Whois server responded with error '{$e->getMessage()}'";
+            $dnsValue['hookStatus'] =  "Whois server responded with error '{$e->getMessage()}'";
         }
-        
+
         return view('tools/dnstool')->with(['result' => $dnsValue ?? []]);
     }
 }
