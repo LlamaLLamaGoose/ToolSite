@@ -36,11 +36,11 @@ class ToolsController extends Controller
             var_dump($input);
         }
 
-        for($i = 0; $i < count($input); $i++) {
+        for ($i = 0; $i < count($input); $i++) {
             array_push($lists, array_filter(explode(" ", $input[$i])));
         }
 
-        for($i = 0; $i < count($lists); $i++) {
+        for ($i = 0; $i < count($lists); $i++) {
             if($lists[$i] != NULL){
                 array_push($sorted_list, array_values($lists[$i]));
             }
@@ -88,7 +88,8 @@ class ToolsController extends Controller
                 }
             }
         }
-    return view('tools/iplookup')->with(['results' => $result ?? []]);
+
+        return view('tools/iplookup')->with(['results' => $result ?? []]);
     }
 
     public function bulkip(Request $request)
@@ -126,9 +127,7 @@ class ToolsController extends Controller
         $i = 0;
         //output array
         foreach ($sorted_list as $row) {
-
             if (count($row) == 2) {
-
                 [ $hits, $ip ] = $row;
 
                 try {
@@ -175,10 +174,9 @@ class ToolsController extends Controller
                 }
                 $i++;
             }
-
         }
-    //dump($result);
-    return view('tools/bulkip')->with(['results' => $result ?? []]);
+
+        return view('tools/bulkip')->with(['results' => $result ?? []]);
     }
 
     public function bulkscreen(Request $request)
@@ -189,9 +187,12 @@ class ToolsController extends Controller
 
         $input = explode(PHP_EOL, $request->syncCommandsTXT);
 
-        for ($i = 0; $i < count ($input); $i++) {
-
+        for ($i = 0; $i < count($input); $i++) {
             preg_match('/--user1.\w{1,}.\w{1,}/', $input[$i], $screenNames);
+
+            if (empty($screenNames[0])) {
+                continue;
+            }
 
             $screenNames[0] = str_replace("--user1 ", '', $screenNames[0]);
             $screenNames[0] = str_replace('@', '_', $screenNames[0]);
@@ -201,6 +202,7 @@ class ToolsController extends Controller
             $syncCommands[$i] = str_replace("'", '"', $syncCommands[$i]);
             $result['screenS'][$i] = "screen -dmS $screenNames[0] bash -c '$syncCommands[$i]; exec bash'"  . "\n";
         }
+
         return view('tools/bulkscreen')->with(['results' => $result ?? []]);
     }
 
@@ -217,13 +219,13 @@ class ToolsController extends Controller
         $inputIP = $request->IPAddressTXT;
         $inputDN = preg_split('/\s+/', $request->DomainTXT);
 
-        for ($i = 0; $i < count ($inputDN); $i++){
+        for ($i = 0; $i < count($inputDN); $i++) {
             $host[$i] = "$inputIP $inputDN[$i] www.$inputDN[$i]" . "\n";
         }
 
-    $result = implode ('', $host);
+        $result = implode('', $host);
 
-    return view('tools/hostfile')->with(['results' => $result ?? []]);
+        return view('tools/hostfile')->with(['results' => $result ?? []]);
     }
 
     public function o365mxrecords(Request $request)
@@ -254,7 +256,7 @@ class ToolsController extends Controller
         $host[9] = "cpapi2 --user={$inputCP} ZoneEdit add_zone_record domain={$inputDN} name=_sipfederationtls._tcp type=SRV target=sipfed.online.lync.com priority=100 weight=1 port=5061 |  grep 'already'" . "\n";
         $host[10] = "cpapi2 --user={$inputCP} ZoneEdit add_zone_record domain={$inputDN} name={$inputDN} type=TXT txtdata='v=spf1 include:spf.protection.outlook.com -all' |  echo 'Update Me Manually'" . "\n";
         //paste
-        $result = implode ('', $host);
+        $result = implode('', $host);
 
         return view('tools/o365mxrecords')->with(['results' => $result ?? []]);
     }
