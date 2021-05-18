@@ -37,11 +37,11 @@ class ToolsController extends Controller
         }
 
         for ($i = 0; $i < count($input); $i++) {
-            array_push($lists, array_filter(explode(" ", $input[$i])));
+            array_push($lists, array_filter(explode(' ', $input[$i])));
         }
 
         for ($i = 0; $i < count($lists); $i++) {
-            if($lists[$i] != NULL){
+            if ($lists[$i] != null) {
                 array_push($sorted_list, array_values($lists[$i]));
             }
         }
@@ -51,6 +51,7 @@ class ToolsController extends Controller
                 $ip = $sorted_list[$i][0];
                 $ip = rtrim($ip);
                 try {
+                    $ip = gethostbyname($ip);
                     $country = $readercont->country($ip);
                     $city = $readercity->city($ip);
                     $isp = $readerasn->asn($ip);
@@ -81,7 +82,7 @@ class ToolsController extends Controller
                     continue;
                 }
                 try {
-                    $result[$i]['isp'] =  ($isp->autonomousSystemOrganization);
+                    $result[$i]['isp'] = ($isp->autonomousSystemOrganization);
                 } catch (\Exception $e) {
                     echo 'Caught!';
                     continue;
@@ -131,13 +132,14 @@ class ToolsController extends Controller
                 [ $hits, $ip ] = $row;
 
                 try {
+                    $ip = gethostbyname($ip);
                     $country = $readercont->country($ip);
                     $city = $readercity->city($ip);
                     $isp = $readerasn->asn($ip);
 
                     $name = $country->country->name;
 
-                    if (in_array($name, [ $au, $nz ])) {
+                    if (in_array($name, [$au, $nz])) {
                         continue;
                     }
                 } catch (\Exception $e) {
@@ -167,7 +169,7 @@ class ToolsController extends Controller
                     continue;
                 }
                 try {
-                    $result[$i]['isp'] =  ($isp->autonomousSystemOrganization);
+                    $result[$i]['isp'] = ($isp->autonomousSystemOrganization);
                 } catch (\Exception $e) {
                     echo 'Caught!';
                     continue;
@@ -194,13 +196,13 @@ class ToolsController extends Controller
                 continue;
             }
 
-            $screenNames[0] = str_replace("--user1 ", '', $screenNames[0]);
+            $screenNames[0] = str_replace('--user1 ', '', $screenNames[0]);
             $screenNames[0] = str_replace('@', '_', $screenNames[0]);
             $result['screenR'][$i] = "screen -r $screenNames[0]" . "\n";
 
             $syncCommands[$i] = rtrim($input[$i]);
             $syncCommands[$i] = str_replace("'", '"', $syncCommands[$i]);
-            $result['screenS'][$i] = "screen -dmS $screenNames[0] bash -c '$syncCommands[$i]; exec bash'"  . "\n";
+            $result['screenS'][$i] = "screen -dmS $screenNames[0] bash -c '$syncCommands[$i]; exec bash'" . "\n";
         }
 
         return view('tools/bulkscreen')->with(['results' => $result ?? []]);
@@ -241,7 +243,7 @@ class ToolsController extends Controller
         $inputCP = $request->cPanelUsername;
         $inputDN = $request->DomainName;
 
-        $microsoftdumb = str_replace(".", '-', $inputDN);
+        $microsoftdumb = str_replace('.', '-', $inputDN);
 
         //output array
         $host[0] = "uapi --user={$inputCP} Email add_mx domain={$inputDN} exchanger={$microsoftdumb}.mail.protection.outlook.com priority=0 | grep 'errors: 1'" . "\n";
@@ -274,7 +276,7 @@ class ToolsController extends Controller
 
         // Define custom whois host
         $customServers = [
-            'love' => new TldServer(".love", "whois.nic.love", false, Factory::get()->createTldParser())
+            'love' => new TldServer('.love', 'whois.nic.love', false, Factory::get()->createTldParser()),
         ];
 
         // Add custom server to existing whois instance
@@ -308,14 +310,14 @@ class ToolsController extends Controller
                 'mxRecord' => $dnsLookup->getRecordsByType('MX') ?? '',
                 'txtRecord' => $dnsLookup->getRecordsByType('TXT') ?? '',
                 'soaRecord' => $dnsLookup->getRecordsByType('SOA') ?? '',
-                'hookStatus' => ''
+                'hookStatus' => '',
             ];
         } catch (ConnectionException $e) {
             $dnsValue['hookStatus'] = 'Disconnect or connection timeout';
         } catch (ServerMismatchException $e) {
             $dnsValue['hookStatus'] = 'TLD server (.com for google.com) not found in current server hosts';
         } catch (WhoisException $e) {
-            $dnsValue['hookStatus'] =  "Whois server responded with error '{$e->getMessage()}'";
+            $dnsValue['hookStatus'] = "Whois server responded with error '{$e->getMessage()}'";
         }
 
         return view('tools/dnstool')->with(['result' => $dnsValue ?? []]);
