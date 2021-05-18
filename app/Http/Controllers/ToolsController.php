@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use dacoto\DomainValidator\Validator\Domain;
 use GeoIp2\Database\Reader;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Iodev\Whois\Exceptions\ConnectionException;
 use Iodev\Whois\Exceptions\ServerMismatchException;
 use Iodev\Whois\Exceptions\WhoisException;
